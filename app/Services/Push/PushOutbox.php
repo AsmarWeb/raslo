@@ -45,7 +45,7 @@ class PushOutbox
                     $this->save($row->id, ['status' => 'revoked']); $counts['revoked']++; return;
                 }
                 $assignmentId = $notification->data['assignment_id'] ?? null;
-                if ($row->status === 'pending' && $assignmentId && ! \App\Models\DeliveryAssignment::whereKey($assignmentId)->where('status', 'pending')->exists()) {
+                if ($row->status === 'pending' && ($notification->data['status'] ?? null) === 'assigned' && $assignmentId && ! \App\Models\DeliveryAssignment::whereKey($assignmentId)->where('status', 'pending')->exists()) {
                     $this->save($row->id, ['status' => 'revoked']); $counts['revoked']++; return;
                 }
                 // Never send an old offer late; other updates also have a short useful lifetime.

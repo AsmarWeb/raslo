@@ -124,3 +124,7 @@ Optional directed UAE emirate rates cover orders without coordinates. Configure 
 ## Driver documents
 
 Drivers can upload private identity and vehicle documents, while administrators review versioned files inside each driver profile. The mobile account menus include My documents and Store integrations. See [the document workflow](docs/driver-documents.md).
+
+## Delivery failure recovery
+
+Drivers report pickup/delivery failure, merchants or administrators set a future appointment, and the assigned driver resumes when due. Same-driver recovery preserves parcel custody, pricing and capacity. See [the workflow and acceptance steps](docs/delivery-recovery.md). Returns remain a separate phase.

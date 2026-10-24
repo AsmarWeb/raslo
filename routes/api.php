@@ -276,3 +276,10 @@ Route::middleware(['auth:sanctum'])->prefix('v1/driver/documents')->controller(\
     Route::post('/', 'store')->middleware('throttle:10,1');
     Route::get('/{document}/file', 'file')->whereUuid('document')->middleware('throttle:60,1');
 });
+
+Route::middleware(['auth:sanctum', 'account.active', 'throttle:20,1'])->controller(\App\Http\Controllers\DeliveryRecoveryController::class)->group(function () {
+    Route::post('/v1/deliveries/{delivery}/recovery/fail', 'fail')->whereNumber('delivery');
+    Route::post('/v1/deliveries/{delivery}/recovery/reschedule', 'reschedule')->whereNumber('delivery');
+    Route::post('/v1/deliveries/{delivery}/recovery/resume', 'resume')->whereNumber('delivery');
+    Route::get('/v1/deliveries/{delivery}/recovery', 'show')->whereNumber('delivery');
+});

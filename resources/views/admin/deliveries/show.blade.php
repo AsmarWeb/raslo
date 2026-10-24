@@ -363,4 +363,5 @@
         @endif
 
     </div>
+    @include('deliveries.recovery', ['delivery' => $delivery])
 @endsection

@@ -60,7 +60,7 @@ class Driver extends Model
                     'assigned',
                     'accepted',
                     'pickup',
-                    'in_transit',
+                    'in_transit', 'pickup_failed', 'delivery_failed', 'rescheduled',
                 ]);
             })
             ->count();

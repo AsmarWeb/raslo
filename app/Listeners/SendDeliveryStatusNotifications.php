@@ -32,6 +32,7 @@ class SendDeliveryStatusNotifications
             DeliveryStatus::Delivered->value,
             DeliveryStatus::Completed->value,
             DeliveryStatus::Cancelled->value,
+            DeliveryStatus::PickupFailed->value, DeliveryStatus::DeliveryFailed->value, DeliveryStatus::Rescheduled->value,
         ], true)) {
             return;
         }
@@ -44,19 +45,26 @@ class SendDeliveryStatusNotifications
                     fn ($query) => $query->where('status', 'pending'))
                 ->latest('id')->first()
             : null;
+        $recovery = in_array($status, ['pickup_failed', 'delivery_failed', 'rescheduled'], true);
+        if ($recovery) {
+            $assignment = $delivery->assignments()->where('status', 'accepted')->latest('id')->first();
+        }
         $recipientIds = [];
         $merchantUserId = $delivery->merchant()->value('user_id');
         if ($merchantUserId !== null) {
             $recipientIds[] = (int) $merchantUserId;
         }
 
-        if ($status === DeliveryStatus::Assigned->value) {
+        if ($status === DeliveryStatus::Assigned->value || $recovery) {
             $driverUserId = $assignment?->driver?->user_id;
             if ($driverUserId !== null) {
                 $recipientIds[] = (int) $driverUserId;
             }
         }
 
+        if ($recovery) {
+            $recipientIds = array_merge($recipientIds, User::whereHas('roles', fn ($query) => $query->where('name', 'admin'))->pluck('id')->all());
+        }
         foreach (array_unique($recipientIds) as $userId) {
             $user = User::query()->find($userId);
             if ($user === null) {

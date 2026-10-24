@@ -41,6 +41,17 @@ class DeliveryTransitionService
                 ]);
             }
 
+            if ($from === DeliveryStatus::Rescheduled) {
+                if ($to === DeliveryStatus::Matching && ($delivery->picked_up_at || $delivery->assignments()->where('status', 'accepted')->exists())) {
+                    throw ValidationException::withMessages(['status' => 'Resolve the assigned shipment before rematching.']);
+                }
+                if (in_array($to, [DeliveryStatus::Accepted, DeliveryStatus::InTransit], true)
+                    && (empty($metadata['recovery_resume']) || ! $delivery->scheduled_at || $delivery->scheduled_at->isFuture()
+                        || ($to === DeliveryStatus::InTransit) !== ($delivery->picked_up_at !== null))) {
+                    throw ValidationException::withMessages(['status' => 'Use the authorized recovery resume action when due.']);
+                }
+            }
+
             $delivery->status = $to;
 
             if ($to === DeliveryStatus::Pickup) {

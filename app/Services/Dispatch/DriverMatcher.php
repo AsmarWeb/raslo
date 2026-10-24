@@ -19,7 +19,7 @@ class DriverMatcher
             ->whereHas('user.roles', fn ($query) => $query->where('name', 'driver'))
             ->withCount(['assignments as dispatch_load' => fn (Builder $query) => $query
                 ->whereIn('status', ['pending', 'accepted'])->whereHas('delivery', fn ($q) => $q
-                    ->whereIn('status', ['assigned', 'accepted', 'pickup', 'in_transit']))])
+                    ->whereIn('status', ['assigned', 'accepted', 'pickup', 'in_transit', 'pickup_failed', 'delivery_failed', 'rescheduled']))])
             ->orderByDesc('dispatch_seen_at')->limit(500)->get()
             ->filter(fn ($driver) => $driver->dispatch_load < $driver->max_active_deliveries
                 && abs((float) $driver->dispatch_latitude) <= 90 && abs((float) $driver->dispatch_longitude) <= 180)

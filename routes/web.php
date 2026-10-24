@@ -347,3 +347,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/drivers/{driver}', [\App\Http\Controllers\DriverDocuments\AdminDriverDocumentsController::class, 'show'])->whereNumber('driver')->name('admin.drivers.show');
     Route::post('/admin/driver-documents/{document}/review', [\App\Http\Controllers\DriverDocuments\AdminDriverDocumentsController::class, 'review'])->whereUuid('document')->name('admin.drivers.documents.review')->middleware('throttle:30,1');
 });
+
+Route::middleware(['auth', 'throttle:20,1'])->controller(\App\Http\Controllers\DeliveryRecoveryController::class)->group(function () {
+    Route::post('/deliveries/{delivery}/recovery/fail', 'fail')->whereNumber('delivery')->name('delivery.recovery.fail');
+    Route::post('/deliveries/{delivery}/recovery/reschedule', 'reschedule')->whereNumber('delivery')->name('delivery.recovery.reschedule');
+    Route::post('/deliveries/{delivery}/recovery/resume', 'resume')->whereNumber('delivery')->name('delivery.recovery.resume');
+});

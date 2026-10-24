@@ -167,4 +167,15 @@ class PushNotificationTest extends TestCase
         $outbox->run(); Http::assertSentCount(2);
         $this->assertTrue(now()->gte(DB::table('push_devices')->first()->expires_at));
     }
+    public function test_recovery_notification_for_accepted_assignment_is_not_treated_as_expired_offer(): void
+    {
+        $this->register();
+        $id = $this->notification();
+        DB::table('notifications')->where('id', $id)->update(['data' => json_encode(['delivery_id' => 123, 'status' => 'rescheduled', 'assignment_id' => 999])]);
+        Http::fake(['exp.host/--/api/v2/push/send' => Http::response(['data' => ['status' => 'ok', 'id' => 'recovery-ticket']])]);
+        app(PushOutbox::class)->enqueue($id, $this->user->id);
+        $this->assertSame(1, app(PushOutbox::class)->run()['tickets']);
+        Http::assertSentCount(1);
+    }
+
 }

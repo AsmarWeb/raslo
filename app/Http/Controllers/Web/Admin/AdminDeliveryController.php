@@ -77,7 +77,7 @@ class AdminDeliveryController extends Controller
                             'assigned',
                             'accepted',
                             'pickup',
-                            'in_transit',
+                            'in_transit', 'pickup_failed', 'delivery_failed', 'rescheduled',
                         ])
                     ),
             ])

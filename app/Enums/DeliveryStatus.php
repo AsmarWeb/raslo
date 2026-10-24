@@ -52,6 +52,7 @@ enum DeliveryStatus: string
             ],
 
             self::Accepted => [
+                self::PickupFailed,
                 self::Pickup,
                 self::Cancelled,
             ],
@@ -76,7 +77,7 @@ enum DeliveryStatus: string
                 self::Cancelled,
             ],
 
-            self::Rescheduled,
+            self::Rescheduled => [self::Accepted, self::InTransit, self::Matching, self::Cancelled],
             self::Expired => [
                 self::Matching,
                 self::Cancelled,
